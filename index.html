@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع مهند الحامد</title>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+        body { font-family: Tahoma, Arial; max-width: 800px; margin: 40px auto; padding: 20px; background: #0a0a0a; color: #fff; line-height: 1.8; }
+        a { color: #4da6ff; text-decoration: none; }
+       .post { border-bottom: 1px solid #333; padding: 20px 0; }
+        h1 { border-bottom: 2px solid #4da6ff; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>أهلاً فيك بموقع مهند الحامد</h1>
+    <p><a href="/admin">لوحة التحكم</a></p>
+    <div id="posts">جاري تحميل النصوص...</div>
+
+    <script>
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", user => {
+                if (!user) {
+                    window.netlifyIdentity.on("login", () => {
+                        document.location.href = "/admin/";
+                    });
+                }
+            });
+        }
+
+        // هذا الكود بجيب النصوص من GitHub مباشرة
+        fetch('https://api.github.com/repos/muhannad-alhamid/muhannad-alhamid/contents/content/posts')
+           .then(res => res.json())
+           .then(files => {
+                let postsHTML = '';
+                const promises = files
+                   .filter(file => file.name.endsWith('.md') && file.name!== '.gitkeep')
+                   .map(file => 
+                        fetch(file.download_url)
+                           .then(res => res.text())
+                           .then(text => {
+                                const title = text.match(/title:\s*(.*)/)?.[1] || file.name;
+                                const body = text.split('---')[2] || '';
+                                return `<div class="post"><h2>${title}</h2><div>${body.replace(/\n/g, '<br>')}</div></div>`;
+                            })
+                    );
+                
+                Promise.all(promises).then(posts => {
+                    document.getElementById('posts').innerHTML = posts.length? posts.join('') : 'لا يوجد نصوص بعد. روح <a href="/admin">لوحة التحكم</a> وانشر أول نص.';
+                });
+            })
+           .catch(() => {
+                document.getElementById('posts').innerHTML = 'لا يوجد نصوص بعد. روح <a href="/admin">لوحة التحكم</a> وانشر أول نص.';
+            });
+    </script>
+</body>
+</html>
