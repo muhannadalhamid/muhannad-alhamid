@@ -5,10 +5,10 @@ media_folder: static/images
 public_folder: /images
 collections:
     - name: posts
-    label: النصوص
-    folder: content/posts
-    create: true
-    slug: '{{slug}}'
-    fields:
+      label: النصوص
+      folder: content/posts
+      create: true
+      slug: '{{slug}}'
+      fields:
             - {label: العنوان, name: title, widget: string}
             - {label: النص, name: body, widget: markdown}
