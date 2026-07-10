@@ -1,0 +1,17 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+    - name: "النصوص"
+    label: "النصوص"
+    folder: "content/النصوص"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+            - {label: "العنوان", name: "title", widget: "string"}
+            - {label: "التاريخ", name: "date", widget: "datetime"}
+            - {label: "النص", name: "body", widget: "markdown"}
