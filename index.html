@@ -3,38 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موقع مهند الحميد</title>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <title>مدونة مهند الحميد</title>
+
+    <!-- خط Cairo العربي الفخم -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- مكتبة تحويل Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
-        body { font-family: Tahoma, Arial; max-width: 800px; margin: 40px auto; padding: 20px; background: #0a0a0a; color: #fff; line-height: 1.8; }
-        a { color: #4da6ff; text-decoration: none; }
-       .post { border-bottom: 1px solid #333; padding: 20px 0; }
-        h1 { border-bottom: 2px solid #4da6ff; padding-bottom: 10px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0a0a;
+            background-image:
+                radial-gradient(at 20% 80%, #0c4a6e 0, transparent 50%),
+                radial-gradient(at 80% 20%, #1e3a8a 0, transparent 50%),
+                radial-gradient(at 50% 50%, #0f172a 0, transparent 50%);
+            min-height: 100vh;
+            color: #e5e5e5;
+            line-height: 1.9;
+        }
+
+        /* الهيدر */
+        header {
+            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.7);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 1.5rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+       .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+       .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+       .admin-btn {
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            color: #0a0a0a;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+
+       .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(56, 189, 248, 0.5);
+        }
+
+        /* المحتوى الرئيسي */
+       .container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+       .welcome {
+            text-align: center;
+            margin-bottom: 4rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+       .welcome h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #e5e5e5 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+       .welcome p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* كرت النص - Glass Effect */
+       .post-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+       .post-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 12px 40px rgba(56, 189, 248, 0.2);
+        }
+
+       .post-card h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #38bdf8;
+        }
+
+       .post-date {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+       .post-date::before {
+            content: '📅';
+        }
+
+       .post-content {
+            font-size: 1.15rem;
+            color: #cbd5e1;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+       .post-content p {
+            margin-bottom: 1rem;
+        }
+
+        /* رسالة لا يوجد نصوص */
+       .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(30, 41, 59, 0.3);
+            backdrop-filter: blur(20px);
+            border: 2px dashed rgba(56, 189, 248, 0.3);
+            border-radius: 20px;
+        }
+
+       .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #94a3b8;
+        }
+
+       .empty-state a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        /* الفوتر */
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #475569;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(56, 189, 248, 0.1);
+            margin-top: 5rem;
+        }
+
+        /* أنيميشن */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* للموبايل */
+        @media (max-width: 768px) {
+           .logo { font-size: 1.4rem; }
+           .welcome h1 { font-size: 2rem; }
+           .post-card { padding: 1.5rem; }
+           .post-card h2 { font-size: 1.6rem; }
+           .post-content { font-size: 1.05rem; }
+        }
     </style>
 </head>
 <body>
-    <h1>أهلاً فيك بموقع مهند الحميد</h1>
-    <p><a href="/admin">لوحة التحكم</a></p>
-    <div id="posts">جاري تحميل النصوص...</div>
+    <header>
+        <div class="header-content">
+            <div class="logo">مهند الحامد</div>
+            <a href="/admin" class="admin-btn">لوحة التحكم</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="welcome">
+            <h1>أهلاً بك في عالمي</h1>
+            <p>هنا أكتب ما يجول في خاطري من أفكار ونصوص</p>
+        </div>
+
+        <div id="posts-container">
+            <!-- النصوص بتظهر هون تلقائياً -->
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 مهند الحامد - جميع الحقوق محفوظة</p>
+    </footer>
 
     <script>
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => {
-                        document.location.href = "/admin/";
-                    });
+        async function loadPosts() {
+            try {
+                const res = await fetch('https://api.github.com/repos/muhannadalhamid/muhannad-alhamid/contents/content/posts');
+                const files = await res.json();
+
+                const container = document.getElementById('posts-container');
+
+                if (!files.length) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>لا يوجد نصوص بعد</h3>
+                            <p>روح <a href="/admin">لوحة التحكم</a> وانشر أول نص</p>
+                        </div>
+                    `;
+                    return;
                 }
-            });
+
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const postRes = await fetch(file.download_url);
+                    const content = await postRes.text();
+
+                    // استخراج العنوان والتاريخ والمحتوى
+                    const titleMatch = content.match(/title:\s*"?([^"\n]+)"?/);
+                    const dateMatch = content.match(/date:\s*(.+)/);
+                    const bodyMatch = content.split('---').slice(2).join('---').trim();
+
+                    const title = titleMatch? titleMatch[1] : 'بدون عنوان';
+                    const date = dateMatch? new Date(dateMatch[1]).toLocaleDateString('ar-EG', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }) : '';
+                    const body = marked.parse(bodyMatch);
+
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+                    card.style.animationDelay = `${i * 0.1}s`;
+                    card.innerHTML = `
+                        <h2>${title}</h2>
+                        <div class="post-date">${date}</div>
+                        <div class="post-content">${body}</div>
+                    `;
+                    container.appendChild(card);
+                }
+            } catch (err) {
+                console.error('خطأ في تحميل النصوص:', err);
+                document.getElementById('posts-container').innerHTML = `
+                    <div class="empty-state">
+                        <h3>حدث خطأ في التحميل</h3>
+                        <p>تأكد من اتصالك بالإنترنت وحاول تحديث الصفحة</p>
+                    </div>
+                `;
+            }
         }
 
-        // هذا الكود بجيب النصوص من GitHub مباشرة
-        fetch('https://api.github.com/repos/muhannadalhamid/muhannad-alhamid/contents/content/posts')
-           .then(res => res.json())
-           .then(files => {
-                let postsHTML = '';
-                const promises = files
-                   .filter(file => file.name.endsWith('.md') && file.name!== '.gitkeep')
+        loadPosts();
+    </script>
+</body>
+</html>                   .filter(file => file.name.endsWith('.md') && file.name!== '.gitkeep')
                    .map(file => 
                         fetch(file.download_url)
                            .then(res => res.text())
